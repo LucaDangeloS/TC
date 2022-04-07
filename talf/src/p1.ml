@@ -19,7 +19,7 @@ Af (Conjunto [Estado "0"; Estado "1"; Estado "2"; Estado "3"],
 
 let a1 = af_of_string "0 1; a b; 0; 0; 0 1 a; 0 1 b; 1 0 a; 1 0 b;";;
 let a2 = af_of_string "0 1; a b; 0; 1; 0 0 a; 0 0 b; 0 1 b;";;
-
+let a5 = af_of_string "0 1 2 3;a b c;0;1 3;0 1 a;1 1 b;1 2 a;0 0 b;0 1 c;1 0 c;1 0 c;2 0 b;2 1 a;3 3 c;3 2 b;3 0 a;2 0 epsilon;2 3 epsilon;2 3 c;";;
 
 let input = cadena_of_string "a a b";;
 
@@ -95,7 +95,8 @@ let ej_1 = Conjunto
   Arco_af (Estado "0", Estado "0", Terminal "b");
   Arco_af (Estado "0", Estado "1", Terminal "b")];;
 
-calcular_cartesiano_arcos ej_1 ej_2;;
+let ej_12 = calcular_cartesiano_arcos ej_1 ej_2;;
+dibuja_af ~titulo:"ej_12" ej_12;;
 
 (* Auto.af -> Auto.af -> bool *)
     
