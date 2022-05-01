@@ -28,7 +28,7 @@ let gic_ejemplo = Gic (Conjunto [No_terminal "S"; No_terminal "A"; No_terminal "
 
     transicion -> (estado origen, estado destino, simbolo terminal de entrada, simbolo de cima de la pila, cadena de simbolos que reemplazan)
 *)
-let ap1 = Ap (
+let ap_1 = Ap (
   Conjunto [Estado "0"; Estado "1"; Estado "2"; Estado "3"],
   Conjunto [Terminal "a"; Terminal "b"],
   Conjunto [No_terminal ""; No_terminal "A"],
@@ -107,3 +107,23 @@ let arcos_ap (Gic (noTerm, term, (Conjunto reglas), _) as gic) =
 
 (* dibuja_ap (ap_of_gic gic_1);; *)
 (* dibuja_ap (ap_of_gic gic_2);; *)
+
+
+(* -------------------------------------------- *)
+
+let simbolos_1 = [
+  No_terminal "S";
+  No_terminal "A";
+  No_terminal "B";
+  No_terminal "C";
+  Terminal "a";
+  Terminal "b";
+  Terminal "c"
+];;
+
+let ap_2 = ap_of_gic gic_1;;
+
+(* encaja / avanza *)
+
+escaner_ap simbolos_1 ap_2;; 
+
