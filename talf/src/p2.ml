@@ -26,7 +26,13 @@ let gic_ejemplo = Gic (Conjunto [No_terminal "S"; No_terminal "A"; No_terminal "
     Simbolo de inicio de la pila,
     Conjunto de estados finales
 
-    transicion -> (estado origen, estado destino, simbolo terminal de entrada, simbolo de cima de la pila, cadena de simbolos que reemplazan)
+    transicion -> (
+      estado origen, 
+      estado destino, 
+      simbolo terminal de entrada, 
+      simbolo de cima de la pila, 
+      cadena de simbolos que reemplazan
+    )
 *)
 let ap_1 = Ap (
   Conjunto [Estado "0"; Estado "1"; Estado "2"; Estado "3"],
@@ -50,7 +56,8 @@ let ap_1 = Ap (
       No_terminal "",
       [No_terminal ""])],
   No_terminal "",
-  Conjunto [Estado "3"]);;
+  Conjunto [Estado "3"]
+  );;
 
 let simbolos_nt = Conjunto [No_terminal "S"; No_terminal "A"; No_terminal "B"; No_terminal "C"];;
 let simbolos_t = Conjunto [Terminal "a"; Terminal "b"; Terminal "c"];;
@@ -109,7 +116,7 @@ let arcos_ap (Gic (noTerm, term, (Conjunto reglas), _) as gic) =
 (* dibuja_ap (ap_of_gic gic_2);; *)
 
 
-(* -------------------------------------------- *)
+(* ----------------------------------------------------------------------------------- *)
 
 let simbolos_1 = [
   No_terminal "S";
@@ -127,3 +134,74 @@ let ap_2 = ap_of_gic gic_1;;
 
 escaner_ap simbolos_1 ap_2;; 
 
+(* --------------------------- *)
+
+exception No_encaja;;
+
+let encaja (estado, cadena, pila_conf) (Arco_ap (origen, destino, entrada, cima, pila_arco) as arc) =
+  let
+    nuevo_estado =
+      if estado = origen then
+        destino
+      else
+        raise No_encaja
+  and
+      nueva_cadena =
+        if entrada = Terminal "" then
+          cadena
+        else
+          if (cadena <> []) && (entrada = List.hd cadena) then
+            List.tl cadena
+          else
+            raise No_encaja
+  and
+      nueva_pila_conf =
+        if cima = Terminal "" then
+          pila_arco @ pila_conf
+        else
+          if (pila_conf <> []) && (cima = List.hd pila_conf) then
+            pila_arco @ (List.tl pila_conf)
+          else
+            raise No_encaja
+  in
+      ((nuevo_estado, nueva_cadena, nueva_pila_conf), arc)
+  ;;
+
+let es_conf_final finales = function
+  (estado, [], _) -> pertenece estado finales
+| _ -> false;;
+
+
+let reglas_activ cadena (Ap (_, _, _, inicial, Conjunto delta, zeta, finales)) =
+  let rec aux = function
+      ([], [], arcos, arcos_activ, _) -> (false, arcos_activ)
+    | (_, _, arcos, arcos_activ, true) -> (true, arcos_activ)
+    | ([], l, _, arcos_activ, false) -> aux (l, [], delta, arcos_activ, false)
+    | (_::cfs, l, [], arcos_activ, false) -> aux (cfs, l, delta, arcos_activ, false)
+    | (cf::cfs, l, a::arcos, arcos_activ,false) ->
+          try
+              let
+                (ncf, pila_arco) = encaja cf a
+              in
+                aux (cf::cfs, ncf::l, arcos, union (Conjunto [pila_arco]) (arcos_activ), es_conf_final finales ncf)
+          with
+              No_encaja -> aux (cf::cfs, l, arcos, arcos_activ, false)
+  in
+    aux ([(inicial, cadena, [zeta])], [], delta, Conjunto [], false)
+;;
+
+
+let cad1 = cadena_of_string "a b c b a";;
+(* gic_2 palíndromos  *)
+reglas_activ cad1 (ap_of_gic gic_2);;
+
+(* ap_1 aes y bes *)
+let cad2 = cadena_of_string "a a b b";;
+reglas_activ cad2 ap_1;;
+
+
+(* dibuja_ap (ap_of_gic gic_2);; *)
+
+
+
+(* encaja cad1 ap_1;; *)
