@@ -4,19 +4,6 @@ open Auto;;
 open Ergo;;
 open Graf;;
 
-let gic_ejemplo = Gic (Conjunto [No_terminal "S"; No_terminal "A"; No_terminal "B"],
-  Conjunto [Terminal "a"; Terminal "b"; Terminal "c"],
-  Conjunto [
-    Regla_gic (No_terminal "S", [Terminal "a"; No_terminal "A"]);
-    Regla_gic (No_terminal "A",
-      [Terminal "a"; Terminal "b"; Terminal "c";
-      No_terminal "A"]);
-    Regla_gic (No_terminal "A", [Terminal "b"; No_terminal "B"]);
-    Regla_gic (No_terminal "B",
-      [Terminal "b"; Terminal "c"; No_terminal "B"]);
-    Regla_gic (No_terminal "B", [])],
-  No_terminal "S");;
-
 (* Ap:
     Conjunto de estados,
     Alfabeto de simbolos terminales de entrada,
@@ -118,24 +105,6 @@ let arcos_ap (Gic (noTerm, term, (Conjunto reglas), _) as gic) =
 
 (* ----------------------------------------------------------------------------------- *)
 
-let simbolos_1 = [
-  No_terminal "S";
-  No_terminal "A";
-  No_terminal "B";
-  No_terminal "C";
-  Terminal "a";
-  Terminal "b";
-  Terminal "c"
-];;
-
-let ap_2 = ap_of_gic gic_1;;
-
-(* encaja / avanza *)
-
-escaner_ap simbolos_1 ap_2;; 
-
-(* --------------------------- *)
-
 exception No_encaja;;
 
 let encaja (estado, cadena, pila_conf) (Arco_ap (origen, destino, entrada, cima, pila_arco) as arc) =
@@ -191,8 +160,8 @@ let reglas_activ cadena (Ap (_, _, _, inicial, Conjunto delta, zeta, finales)) =
 ;;
 
 
-let cad1 = cadena_of_string "a b c b a";;
 (* gic_2 palíndromos  *)
+let cad1 = cadena_of_string "a b c b a";;
 reglas_activ cad1 (ap_of_gic gic_2);;
 
 (* ap_1 aes y bes *)
@@ -201,7 +170,3 @@ reglas_activ cad2 ap_1;;
 
 
 (* dibuja_ap (ap_of_gic gic_2);; *)
-
-
-
-(* encaja cad1 ap_1;; *)
